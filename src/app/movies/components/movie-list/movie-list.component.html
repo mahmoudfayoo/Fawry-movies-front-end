@@ -1,0 +1,64 @@
+<div class="movies-container">
+  <!-- Error message -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Admin Controls -->
+  <div *ngIf="isAdmin" class="admin-controls">
+    <h3>Admin Controls</h3>
+    <div class="add-movie-form">
+      <input 
+        type="text" 
+        [(ngModel)]="imdbId" 
+        placeholder="Enter IMDB ID (e.g., tt3896198)"
+        class="form-control">
+      <button (click)="addMovie()" class="btn-primary">Add Movie</button>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-section">
+    <h3>Search Movie by ID</h3>
+    <div class="search-form">
+      <input 
+        type="text" 
+        [(ngModel)]="searchId" 
+        placeholder="Enter movie ID"
+        class="form-control">
+      <button (click)="searchMovie()" class="btn-primary">Search</button>
+    </div>
+  </div>
+
+  <!-- Selected Movie Details -->
+  <div *ngIf="selectedMovie" class="movie-details">
+    <h3>Movie Details</h3>
+    <div class="movie-card">
+      <img *ngIf="selectedMovie.poster" [src]="selectedMovie.poster" [alt]="selectedMovie.title" class="movie-poster">
+      <div class="movie-info">
+        <h4>{{ selectedMovie.title }}</h4>
+        <p><strong>Year:</strong> {{ selectedMovie.year }}</p>
+        <p><strong>Director:</strong> {{ selectedMovie.director }}</p>
+        <p><strong>Plot:</strong> {{ selectedMovie.plot }}</p>
+        <p><strong>IMDB Rating:</strong> {{ selectedMovie.imdbRating }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movies List -->
+  <div class="movies-list">
+    <h3>All Movies</h3>
+    <div class="movies-grid">
+      <div *ngFor="let movie of movies" class="movie-card">
+        <img *ngIf="movie.poster" [src]="movie.poster" [alt]="movie.title" class="movie-poster">
+        <div class="movie-info">
+          <h4>{{ movie.title }}</h4>
+          <p><strong>Year:</strong> {{ movie.year }}</p>
+          <p><strong>Director:</strong> {{ movie.director }}</p>
+          <p><strong>IMDB Rating:</strong> {{ movie.imdbRating }}</p>
+          <button *ngIf="isAdmin" (click)="deleteMovie(movie.id!)" class="btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
