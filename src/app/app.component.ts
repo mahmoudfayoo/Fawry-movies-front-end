@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './auth/auth.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -18,12 +17,6 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
   constructor(
-    public authService: AuthService,
-    private router: Router
+    public authService: AuthService
   ) {}
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
 }

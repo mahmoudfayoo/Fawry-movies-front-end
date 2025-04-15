@@ -1,7 +1,6 @@
 <nav *ngIf="authService.isLoggedIn()" class="navbar">
   <div class="nav-links">
     <a routerLink="/movies" routerLinkActive="active">Movies</a>
-    <button (click)="logout()" class="logout-btn">Logout</button>
   </div>
 </nav>
 

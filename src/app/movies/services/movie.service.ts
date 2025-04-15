@@ -64,7 +64,7 @@ export class MovieService {
 
   getMovieById(id: number): Observable<MovieResponse> {
     return this.http.get<MovieResponse>(
-      `${this.baseUrl}/user/movie/get/${id}`,
+      `${this.baseUrl}/user/movie/getById?i=${id}`,
       { 
         headers: this.getAuthHeaders(),
         withCredentials: true
