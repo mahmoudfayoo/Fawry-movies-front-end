@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { Movie } from '../models/movie.model';
 import { MovieResponse } from '../models/movie-response.model';
 import { AuthService } from '../../auth/auth.service';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -50,12 +51,48 @@ export class MovieService {
     );
   }
 
-  getAllMovies(): Observable<MovieResponse> {
-    return this.http.get<MovieResponse>(
-      `${this.baseUrl}/user/movie/getAll`,
-      { 
-        headers: this.getAuthHeaders()
-      }
+  getAllMovies(): Observable<Movie[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(`${this.baseUrl}/user/movie/getAll`, { headers }).pipe(
+      map((apiMovies: any[]) => {
+        // Transform API response to match Movie interface
+        const transformedMovies = apiMovies
+          .filter(movie => movie.Response === "True" && movie.Title && movie.Year)
+          .map(movie => ({
+            id: movie.id,
+            title: movie.Title,
+            year: movie.Year,
+            rated: movie.Rated,
+            released: movie.Released,
+            runtime: movie.Runtime,
+            genre: movie.Genre,
+            director: movie.Director,
+            writer: movie.Writer,
+            actors: movie.Actors,
+            plot: movie.Plot,
+            language: movie.Language,
+            country: movie.Country,
+            poster: movie.Poster,
+            imdbRating: movie.ImdbRating,
+            imdbID: movie.ImdbID,
+            response: movie.Response
+          }));
+
+        // Remove duplicates based on title and year
+        const uniqueMovies = transformedMovies.reduce((acc: Movie[], current: Movie) => {
+          const exists = acc.find(movie => 
+            movie.title === current.title && 
+            movie.year === current.year
+          );
+          if (!exists) {
+            acc.push(current);
+          }
+          return acc;
+        }, []);
+
+        return uniqueMovies;
+      }),
+      catchError(this.handleError)
     );
   }
 
@@ -96,5 +133,10 @@ export class MovieService {
       `${this.baseUrl}/auth/get-users`,
       { headers: this.getAuthHeaders() }
     );
+  }
+
+  private handleError(error: any) {
+    console.error('Error in getAllMovies:', error);
+    return throwError('Something went wrong');
   }
 }

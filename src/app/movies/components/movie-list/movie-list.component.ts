@@ -21,6 +21,7 @@ export class MovieListComponent implements OnInit {
   isAdmin: boolean = false;
   apiKey: string = '9c31d025';
   imdbId: string = '';
+  filteredMovies: Movie[] = [];
 
   constructor(
     private movieService: MovieService,
@@ -34,19 +35,18 @@ export class MovieListComponent implements OnInit {
   }
 
   loadMovies(): void {
-    this.movieService.getAllMovies().subscribe(
-      (response: MovieResponse) => {
-        if (response.success) {
-          this.movies = response.movies || [];
-          this.error = '';
-        } else {
-          this.error = response.message || 'Failed to load movies';
-        }
+    this.movieService.getAllMovies().subscribe({
+      next: (movies: Movie[]) => {
+        console.log('Received movies:', movies);
+        this.movies = movies;
+        this.filteredMovies = [...this.movies];
+        console.log('Movies after assignment:', this.movies);
       },
-      (error: Error) => {
-        this.error = 'Failed to load movies: ' + error.message;
+      error: (error) => {
+        console.error('Error loading movies:', error);
+        this.error = 'Failed to load movies. Please try again later.';
       }
-    );
+    });
   }
 
   addMovie(): void {

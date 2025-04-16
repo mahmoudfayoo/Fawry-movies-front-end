@@ -15,4 +15,5 @@ export interface Movie {
   poster?: string;
   imdbRating?: string;
   imdbID: string;
+  response?: string;
 }
