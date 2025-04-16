@@ -94,14 +94,17 @@ export class MovieListComponent implements OnInit {
         if (response.success && response.movie) {
           this.selectedMovie = response.movie;
           this.error = '';
+          console.log('Movie found:', response.movie);
         } else {
           this.error = response.message || 'Movie not found';
           this.selectedMovie = null;
+          console.log('Movie not found:', response);
         }
       },
       (error: Error) => {
         this.error = 'Failed to find movie: ' + error.message;
         this.selectedMovie = null;
+        console.error('Error searching movie:', error);
       }
     );
   }

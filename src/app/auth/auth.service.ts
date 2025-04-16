@@ -22,10 +22,7 @@ export class AuthService {
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization, X-Request-With'
+      'Accept': 'application/json'
     });
   }
 
@@ -36,7 +33,7 @@ export class AuthService {
       email
     }, {
       responseType: 'text',
-      withCredentials: true
+      headers: this.getAuthHeaders()
     });
   }
 
@@ -45,7 +42,7 @@ export class AuthService {
       username,
       password
     }, {
-      withCredentials: true
+      headers: this.getAuthHeaders()
     }).pipe(
       tap(response => {
         if (response.token) {
@@ -62,7 +59,10 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(this.TOKEN_KEY);
+    }
+    return null;
   }
 
   getUserRole(): string | null {
@@ -70,17 +70,20 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    const token = this.getToken();
-    if (!token) return false;
+    if (typeof window !== 'undefined') {
+      const token = this.getToken();
+      if (!token) return false;
 
-    try {
-      // Simple JWT expiration check
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const expiry = payload.exp * 1000; // Convert to milliseconds
-      return Date.now() < expiry;
-    } catch {
-      return false;
+      try {
+        // Simple JWT expiration check
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expiry = payload.exp * 1000; // Convert to milliseconds
+        return Date.now() < expiry;
+      } catch {
+        return false;
+      }
     }
+    return false;
   }
 
   isAdmin(): boolean {
@@ -89,8 +92,7 @@ export class AuthService {
 
   getUsers(): Observable<any> {
     return this.http.get(`${this.baseUrl}/get-users`, {
-      headers: this.getAuthHeaders(),
-      withCredentials: true
+      headers: this.getAuthHeaders()
     });
   }
 }

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Movie } from '../models/movie.model';
 import { MovieResponse } from '../models/movie-response.model';
 import { AuthService } from '../../auth/auth.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -24,10 +25,7 @@ export class MovieService {
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization, X-Request-With'
+      'Accept': 'application/json'
     });
   }
 
@@ -56,19 +54,40 @@ export class MovieService {
     return this.http.get<MovieResponse>(
       `${this.baseUrl}/user/movie/getAll`,
       { 
-        headers: this.getAuthHeaders(),
-        withCredentials: true
+        headers: this.getAuthHeaders()
       }
     );
   }
 
   getMovieById(id: number): Observable<MovieResponse> {
-    return this.http.get<MovieResponse>(
-      `${this.baseUrl}/user/movie/getById?i=${id}`,
-      { 
-        headers: this.getAuthHeaders(),
-        withCredentials: true
-      }
+    return this.http.get<any>(`${this.baseUrl}/user/movie/getById?i=${id}`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      map(response => {
+        if (response.Response === "True") {
+          const movie: Movie = {
+            id: id,
+            title: response.Title,
+            year: response.Year,
+            rated: response.Rated,
+            released: response.Released,
+            runtime: response.Runtime,
+            genre: response.Genre,
+            director: response.Director,
+            writer: response.Writer,
+            actors: response.Actors,
+            plot: response.Plot,
+            language: response.Language,
+            country: response.Country,
+            poster: response.Poster,
+            imdbRating: response.ImdbRating,
+            imdbID: response.ImdbID
+          };
+          return { success: true, movie: movie };
+        } else {
+          return { success: false, message: 'Movie not found' };
+        }
+      })
     );
   }
 
