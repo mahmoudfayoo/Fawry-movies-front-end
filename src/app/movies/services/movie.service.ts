@@ -30,24 +30,43 @@ export class MovieService {
     });
   }
 
-  addMovie(imdbId: string, apiKey: string): Observable<MovieResponse> {
-    return this.http.post<MovieResponse>(
-      `${this.baseUrl}/admin/movie/add`,
-      { imdbId, apiKey },
-      { 
-        headers: this.getAuthHeaders(),
-        withCredentials: true
-      }
+  addMovie(imdbId: string, apiKey: string): Observable<Movie> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<Movie>(
+      `${this.baseUrl}/admin/movie/add?i=${imdbId}&apikey=${apiKey}`,
+      {},
+      { headers }
+    ).pipe(
+      map((response: any) => ({
+        id: response.id,
+        title: response.Title,
+        year: response.Year,
+        rated: response.Rated,
+        released: response.Released,
+        runtime: response.Runtime,
+        genre: response.Genre,
+        director: response.Director,
+        writer: response.Writer,
+        actors: response.Actors,
+        plot: response.Plot,
+        language: response.Language,
+        country: response.Country,
+        poster: response.Poster,
+        imdbRating: response.ImdbRating,
+        imdbID: response.ImdbID,
+        response: response.Response
+      })),
+      catchError(this.handleError)
     );
   }
 
-  deleteMovie(movieId: number): Observable<MovieResponse> {
-    return this.http.delete<MovieResponse>(
-      `${this.baseUrl}/admin/movie/delete/${movieId}`,
-      { 
-        headers: this.getAuthHeaders(),
-        withCredentials: true
-      }
+  deleteMovie(movieId: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete(
+      `${this.baseUrl}/admin/movie/delete?i=${movieId}`,
+      { headers }
+    ).pipe(
+      catchError(this.handleError)
     );
   }
 

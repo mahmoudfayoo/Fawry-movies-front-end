@@ -17,6 +17,23 @@
     </div>
   </div>
 
+  <!-- Add Movie Form -->
+  <div class="add-movie-section">
+    <h3>Add Movie <span *ngIf="isAdmin" class="admin-text">(Admin)</span></h3>
+    <div class="add-movie-form">
+      <input 
+        type="text" 
+        [(ngModel)]="imdbId" 
+        placeholder="Enter IMDB ID (e.g., tt3896198)"
+        class="form-control">
+      <button 
+        (click)="addMovie()" 
+        class="btn-primary">
+        Add Movie
+      </button>
+    </div>
+  </div>
+
   <!-- Search Bar -->
   <div class="search-section">
     <h3>Search Movie by ID</h3>
@@ -56,7 +73,7 @@
           <p><strong>Year:</strong> {{ movie.year }}</p>
           <p><strong>Director:</strong> {{ movie.director }}</p>
           <p><strong>IMDB Rating:</strong> {{ movie.imdbRating }}</p>
-          <button *ngIf="isAdmin" (click)="deleteMovie(movie.id!)" class="btn-danger">Delete</button>
+          <button *ngIf="movie.id" (click)="deleteMovie(movie.id)" class="btn-danger">Delete</button>
         </div>
       </div>
     </div>
